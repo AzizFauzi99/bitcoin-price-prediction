@@ -38,21 +38,68 @@ Close - harga penutupan dari periode waktu tersebut
 Volume (Crypto) - volume dalam mata uang yang ditransaksikan. Misalnya, untuk BTC/USDT, ini dalam jumlah BTC
 Volume Base Ccy - volume dalam mata uang dasar/konversi. Misalnya, untuk BTC/USDT, ini dalam jumlah USDT
 ### Exploratory Data Analysis
-- Deskripsi variabel: Memahami karakteristik data pada setiap variabel, seperti mean, median, dan distribusi.
-![image](assets\1.JPG)
-- Cek Missing value
-- Analisis univariat pada fitur numerik: Menganalisis distribusi dan statistik deskriptif dari setiap fitur numerik.
-- Analisis multivariat pada fitur numerik: Mengeksplorasi hubungan antara beberapa fitur numerik.
-- Melihat Matrik Korelasi
-- Melihat tren close price setiap harinya
-
+- Deskripsi variabel: Memahami karakteristik data pada setiap variabel, seperti mean, median, dan distribusi.<br>
+![image](https://github.com/AzizFauzi99/bitcoin-price-prediction/assets/92005833/408dfa43-3139-4c42-92c6-a09e29514d8c) <br>
+- Cek Missing value <br>
+![image](https://github.com/AzizFauzi99/bitcoin-price-prediction/assets/92005833/62e9e191-d603-40f6-94cc-cc56f799c8dd) <br>
+   Tidak ada missing value di data ini <br>
+- Analisis univariat pada fitur numerik: Menganalisis distribusi dan statistik deskriptif dari setiap fitur numerik.<br> 
+![image](https://github.com/AzizFauzi99/bitcoin-price-prediction/assets/92005833/1a413ccc-5f1a-4a30-a5ea-2fe7ce9ce075) <br>
+- Analisis multivariat pada fitur numerik: Mengeksplorasi hubungan antara beberapa fitur numerik. <br>
+![image](https://github.com/AzizFauzi99/bitcoin-price-prediction/assets/92005833/c684b0f8-6026-43e8-b567-2b93314e82a5) <br>
+    Pola Persebaran data tersebut memiliki korelasi positif. Hal ini ditandai dengan meningkatnya variabel pada sumbu y saat terjadi peningkatan variabel pada sumbu x <br>
+- Melihat Matrik Korelasi <br>
+![image](https://github.com/AzizFauzi99/bitcoin-price-prediction/assets/92005833/51974620-f725-4e57-a39d-a63fe9e3b764) <br>
+    Matriks di atas menunjukkan Volume USD dan Volume BTC tidak terlalu berkorelasi terhadap close price <br>
+- Melihat tren close price setiap harinya<br>
+![image](https://github.com/AzizFauzi99/bitcoin-price-prediction/assets/92005833/f4866a44-4fd9-4e47-bae0-42e6f4699f93) <br>
+   Trend cenderung fluktuatif tetapi mengarah pada kenaikan <br>
+  
 ## 4. Data Preparation
-1. Drop Data Sebelum 2017
--- Melakukan filter untuk menghapus data sebelum tahun 2017.
-2. Splitting Data
--- Memisahkan data menjadi set pelatihan dan set validasi. Set pelatihan digunakan untuk melatih model, sementara set validasi digunakan untuk mengevaluasi performa model.
--- Pembagian ini umumnya dilakukan dengan proporsi tertentu, misalnya 80% data untuk pelatihan dan 20% untuk validasi.
-3. Scaling Data
--- Melakukan penskalaan fitur menggunakan MinMaxScaler untuk mengubah nilai fitur ke rentang antara 0 dan 1. Hal ini penting karena LSTM sensitif terhadap skala data.
-4. Membuat Dataset untuk Model LSTM
--- Membuat dataset dalam bentuk time series yang sesuai untuk model LSTM. Ini melibatkan pembuatan pasangan data input-output dengan jendela waktu (time steps) tertentu.
+1. Drop Data Sebelum 2017 <br>
+- Melakukan filter untuk menghapus data sebelum tahun 2017, untuk fokus pada data terbaru yang lebih relevan. <br>
+2. Splitting Data <br>
+- Memisahkan data menjadi set pelatihan dan set validasi. Set pelatihan digunakan untuk melatih model, sementara set validasi digunakan untuk mengevaluasi performa model. <br>
+- Pembagian ini umumnya dilakukan dengan proporsi tertentu, misalnya 80% data untuk pelatihan dan 20% untuk validasi. <br>
+3. Scaling Data <br>
+- Melakukan penskalaan fitur menggunakan MinMaxScaler untuk mengubah nilai fitur ke rentang antara 0 dan 1. Hal ini penting karena LSTM sensitif terhadap skala data. <br>
+- Scalling dilakukan setelah spilitting agar tidak terjadi data leakage<br>
+4. Membuat Dataset untuk Model LSTM <br>
+- Membuat dataset dalam bentuk time series yang sesuai untuk model LSTM. Ini melibatkan pembuatan pasangan data input-output dengan jendela waktu (time steps) tertentu.<br>
+
+## 5. Modeling
+### Tahapan dan Parameter Pemodelan
+1. Model Pertama:
+- Menggunakan model Sequential dengan dua lapisan LSTM dan dua lapisan Dense.
+- Optimizer: SGD dengan momentum 0.9.
+- Loss function: Huber loss.
+- Metrik evaluasi: Mean Absolute Error (MAE).
+- Callback: EarlyStopping untuk mencegah overfitting.
+2. Model Perbaikan:
+- Sama seperti model pertama, namun menggunakan optimizer Adam.
+### Kelebihan dan Kekurangan Algoritma (Optimizer)
+#### SGD:
+- Kelebihan: Cocok untuk masalah yang memiliki banyak data dan dapat mencapai minimum global.
+- Kekurangan: Kurang efisien dalam masalah kompleks dan membutuhkan penyetelan hyperparameter yang lebih teliti.
+#### Adam:
+- Kelebihan: Lebih efisien dalam menemukan minimum global, cocok untuk masalah dengan data yang besar atau kompleks.
+- Kekurangan: Dapat overfit jika tidak diatur dengan benar, dan dapat lebih lambat dalam mencapai konvergensi pada beberapa kasus.
+
+### Proses Improvement dengan Hyperparameter Tuning
+Pada model kedua, terdapat peningkatan performa dengan mengubah optimizer dari SGD menjadi Adam. Adam memberikan kemampuan adaptasi yang lebih baik terhadap laju pembelajaran untuk setiap parameter, sehingga membantu model mencapai konvergensi yang lebih baik. Hal ini menghasilkan penurunan MAE dari 0.0463 menjadi 0.0241, menunjukkan bahwa model kedua lebih baik dalam memprediksi harga Bitcoin.
+
+## 6. Evaluation
+1. Metrik Evaluasi: Mean Absolute Error (MAE).
+
+2. Hasil Proyek Berdasarkan Metrik Evaluasi:
+- Model pertama memiliki MAE sebesar 0.0463.
+![image](https://github.com/AzizFauzi99/bitcoin-price-prediction/assets/92005833/fa56ffbf-5b01-40e7-905e-3907f43a6cf8)
+- Setelah melakukan perbaikan dengan menggunakan optimizer Adam, MAE turun menjadi 0.0241.
+![image](https://github.com/AzizFauzi99/bitcoin-price-prediction/assets/92005833/7e74780c-207d-4b9e-81aa-acc34aab584e)
+- Penurunan MAE menunjukkan bahwa model kedua lebih baik dalam memprediksi harga Bitcoin dibandingkan dengan model pertama.
+
+3. Penjelasan Metrik Evaluasi (MAE):
+- MAE mengukur rata-rata absolut dari selisih antara nilai prediksi dan nilai observasi aktual.
+- Formula MAE = (1/n) Σ|yi - ŷi|
+- MAE menghasilkan skor absolut yang mewakili kesalahan rata-rata dari model dalam memprediksi nilai sebenarnya.
+- Semakin rendah nilai MAE, semakin baik model dalam memprediksi nilai sebenarnya.
